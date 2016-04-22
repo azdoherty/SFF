@@ -31,7 +31,7 @@ def image_array(image_dir):
     return img_array
         
 def test_run():
-    image_dir = 'photos/set_1'
+    image_dir = 'photos/set_3'
     flist = os.listdir(image_dir)
     flist = sorted(flist, key = lambda x: x.split('_')[1])
     im_list = []
