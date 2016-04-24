@@ -15,16 +15,6 @@ def generate_blur_set(img, N):
     for i in range(N):
         blurred_array[i,:,:] = cv2.blur(img, (2 * (i+1) - 1, 2 * (i+1) - 1))
     return blurred_array    
-def focus_set(img_array):
-    '''
-    determine global focus for each image 
-    '''
-    N,h,w = img_array.shape
-    f_vec = np.empty((N))
-    for i in range(N):
-        f_vec[i] = focus.global_focus(img_array[i])
-    return f_vec
-        
    
 def plot_focus(f_vec, title = 'Focus'):
     ax = plt.figure()
