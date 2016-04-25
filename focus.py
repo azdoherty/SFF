@@ -6,6 +6,12 @@ except:
     print("assignment8.py not important, ability to fine adjust images not present")
 import os
 
+def normalizeImage(img):
+    out = np.zeros(img.shape, dtype=np.float64)
+    out = img - img.min()
+    x =  out.max()
+    out = out*255./x
+    return out.astype(np.uint8)
 
 def adjust_images(image_dir, save = True):
     '''
@@ -62,14 +68,26 @@ def image_array(image_dir):
         img_array[i,:,:] = cv2.cvtColor(cv2.imread(os.path.join(image_dir, flist[i])), cv2.COLOR_BGR2GRAY)
         print flist[i]
     return img_array
-    
+
+def basic_depth(img_array, smooth = True):
+    n,h,w = img_array.shape
+    focus_array = np.empty((n,h,w), dtype = np.float32)
+    for i in range(n):
+        focus_array[i,:,:] = local_focus(img_array[i,:,:])
+        if smooth == True:
+            focus_array[i,:,:] = cv2.blur( focus_array[i,:,:], (51,51))
+    height = np.argmax(focus_array, axis = 0)
+    return height
+        
+
+ 
 def focus_set(img_array):
     '''
     determine global focus for each image 
     '''
-    N,h,w = img_array.shape
-    f_vec = np.empty((N))
-    for i in range(N):
+    n,h,w = img_array.shape
+    f_vec = np.empty((n))
+    for i in range(n):
         f_vec[i] = global_focus(img_array[i])
     return f_vec
                 
@@ -83,8 +101,11 @@ def test_run():
         im_list.append( cv2.cvtColor(cv2.imread(os.path.join(image_dir, flist[i])), cv2.COLOR_BGR2GRAY))
         cv2.imwrite('output/{}_focus.png'.format(i), local_focus(im_list[i]))
     '''
-    image_dir = 'photos/set_1'
-    adjust_images(image_dir)   
+    image_dir = 'photos/set_6'
+    img_array = image_array(image_dir)
+    h1 = basic_depth(img_array, True)
+    cv2.imwrite('set_6.png', normalizeImage(h1))
+ 
 if __name__ == "__main__":
     test_run()
     print("main")
